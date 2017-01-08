@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      myBILLS - Login
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+Check for storage {{agent}} {{agent.email}}!
+  <ion-list>
+
+  <ion-item>
+    <ion-label floating>Username</ion-label>
+    <ion-input [(ngModel)]="user" type="text" value=""></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label floating>Password</ion-label>
+    <ion-input [(ngModel)]="pass"  type="password" value=""></ion-input>
+  </ion-item>
+
+</ion-list>
+ <button ion-button icon-left block (click)="login()">
+	<ion-icon name="log-in"></ion-icon>
+ 	Login
+ </button>
+
+</ion-content>
