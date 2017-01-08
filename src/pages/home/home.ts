@@ -22,7 +22,7 @@ export class HomePage {
 
   public logout() {
   let confirm = this.alertCtrl.create({
-      title: 'Logout!',
+      title: 'Sign OUT!',
       message: 'Are you sure to log out?',
       buttons: [
         {
