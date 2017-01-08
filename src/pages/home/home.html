@@ -1,16 +1,20 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="primary">
     <ion-title>
       myBILLS - Home
     </ion-title>
     <ion-buttons end>
-      <button ion-button (click)="logout()">
+      <button ion-button color="danger" solid round (click)="logout()" icon-left>
         <ion-icon name="log-out"></ion-icon>
+        Logout
       </button>
     </ion-buttons>
   </ion-navbar>
+  <ion-toolbar color="secondary">
+    <ion-title>Account of {{agent.name}}</ion-title>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  Welcome {{agent.name}} {{agent.email}}!
+  List all the customers
 </ion-content>

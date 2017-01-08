@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NativeStorage} from 'ionic-native';
+import { Storage } from '@ionic/storage';
 import { NavController, AlertController, LoadingController, Loading } from 'ionic-angular';
 import { BillingAuthenticationApi } from '../../providers/BillingAuthenticationApi';
 import { Agent } from '../../providers/BillingAuthenticationApi';
@@ -15,11 +15,17 @@ export class LoginPage {
   pass: string;
   loading: Loading;
   agent: Agent;
-  constructor(public navCtrl: NavController, private billingApi: BillingAuthenticationApi, private alertCtrl: AlertController, private loadingCtrl: LoadingController) {
 
-    NativeStorage.getItem('agent').then(function(data){
-      this.agent = data;
-    }, function (error) {console.log(error)});
+  constructor(storage: Storage, public navCtrl: NavController, private billingApi: BillingAuthenticationApi, private alertCtrl: AlertController, private loadingCtrl: LoadingController) {
+
+    storage.get('agent').then(
+      data => {
+        if(data !== null) {
+          this.agent = new Agent(data.id,data.name,data.email,data.pass,data.session);
+        }
+      },
+      error => console.error(error)
+    );
   }
 
   public login () {

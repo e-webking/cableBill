@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { NativeStorage} from 'ionic-native';
-import { NavController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+import { NavController, AlertController} from 'ionic-angular';
 import { BillingAuthenticationApi } from '../../providers/BillingAuthenticationApi';
 import { Agent } from '../../providers/BillingAuthenticationApi';
 import { LoginPage } from '../login/login';
@@ -13,16 +13,41 @@ import 'rxjs/add/operator/map';
 })
 export class HomePage {
   agent: Agent;
-  constructor(public navCtrl: NavController, private billingApi: BillingAuthenticationApi) {
+  constructor(private storage: Storage, public navCtrl: NavController, private alertCtrl: AlertController, private billingApi: BillingAuthenticationApi) {
     let agentVal = this.billingApi.getAgent();
-    NativeStorage.setItem('agent', agentVal);
-    console.log(agentVal);
-    this.agent = agentVal;      
+    this.agent = agentVal;
+    this.storage.set('agent', {id: agentVal.id, name: agentVal.name, email: agentVal.email, pass:agentVal.pass, session:agentVal.session});
+          
   }
 
   public logout() {
-    this.billingApi.logout().subscribe(succ => {
-        this.navCtrl.setRoot(LoginPage)
+  let confirm = this.alertCtrl.create({
+      title: 'Logout!',
+      message: 'Are you sure to log out?',
+      buttons: [
+        {
+          text: 'NO',
+          role: 'cancel',
+          handler: () => {}
+        },
+        {
+          text: 'YES',
+          handler: () => {
+            let navTransition = confirm.dismiss();
+            this.billingApi.logout().subscribe(succ => {
+                this.storage.remove('agent').then(
+                ()=>{
+                  navTransition.then(() => {this.navCtrl.setRoot(LoginPage)});
+                },
+                error=>console.error(error)
+                );
+            });
+
+            return false;
+          }
+        }
+      ]
     });
+    confirm.present();
   }
 }
