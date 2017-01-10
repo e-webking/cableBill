@@ -8,24 +8,27 @@ export class Agent {
   name: string;
   email: string;
   pass: string;
-  session: string;
+  token: string;
  
-  constructor(id: number, name:string, email: string, pass: string, session: string) {
+  constructor(id: number, name:string, email: string, pass: string, token: string) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.pass = pass;
-    this.session = session;
+    this.token = token;
   }
 }
 
 @Injectable()
 export class BillingAuthenticationApi {
   
-  private authURL: string = "http://billing.pa247.net/index.php?id=34";
+  private authURL: string = "http://typo3.local/billing/index.php?id=29";
+  private logoutURL: string = "http://billing.local/routing/logout/";
+
   currentAgent: Agent;
   
   constructor(public http: Http) {
+    this.http = http;
   }
 
   public login(user,pass) {
@@ -33,13 +36,15 @@ export class BillingAuthenticationApi {
       return Observable.throw("Please enter access details!");
     } else {
       return Observable.create(observer => {
+        //Access-Control-Allow-Origin
+
         this.http.get(this.authURL + '&user=' + user + '&pass=' + pass + '&logintype=login&type=90')
-          .map(res => res.json()).subscribe(data => {
-            //console.log('At API');
-            //console.log(JSON.stringify(data));
+        .map(res => res.json()).subscribe(data => {
+
+            console.log(JSON.stringify(data));
 
             if(data.status == "OK") {
-              this.currentAgent = new Agent(data.agent,data.name,user,pass,data.session_id);
+              this.currentAgent = new Agent(data.agent,data.name,user,pass,data.token);
               observer.next(true);
             } else {
               observer.next(false);
@@ -57,7 +62,7 @@ export class BillingAuthenticationApi {
 
   public logout() {
     return Observable.create(observer => {
-      this.http.get(this.authURL + '&user=' + this.currentAgent.email + '&pass=' + this.currentAgent.pass + '&logintype=logout&type=90');
+      this.http.get(this.logoutURL + this.currentAgent.token);
       this.currentAgent = null;
       observer.next(true);
       observer.complete();

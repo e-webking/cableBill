@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { Storage } from '@ionic/storage';
-import { NavController, AlertController} from 'ionic-angular';
+import { NavController, AlertController, LoadingController, Loading} from 'ionic-angular';
 import { BillingAuthenticationApi } from '../../providers/BillingAuthenticationApi';
+import { BillingCustomerApi } from '../../providers/BillingCustomerApi';
+import { StorageService } from '../../providers/StorageService';
 import { Agent } from '../../providers/BillingAuthenticationApi';
+import { Customer } from '../../providers/BillingCustomerApi';
 import { LoginPage } from '../login/login';
 
 import 'rxjs/add/operator/map';
@@ -13,10 +15,24 @@ import 'rxjs/add/operator/map';
 })
 export class HomePage {
   agent: Agent;
-  constructor(private storage: Storage, public navCtrl: NavController, private alertCtrl: AlertController, private billingApi: BillingAuthenticationApi) {
-    let agentVal = this.billingApi.getAgent();
+  loading: Loading;
+
+  constructor(private storageSrv: StorageService, public navCtrl: NavController, private alertCtrl: AlertController, private loadingCtrl: LoadingController, private authApi: BillingAuthenticationApi, private customerApi: BillingCustomerApi) {
+    
+    let agentVal = this.authApi.getAgent();
     this.agent = agentVal;
-    this.storage.set('agent', {id: agentVal.id, name: agentVal.name, email: agentVal.email, pass:agentVal.pass, session:agentVal.session});
+    this.customerApi.getCustomers(this.agent.id, this.agent.token).subscribe(
+     data => {
+        if(data) {
+          //loop the customers
+         
+        } else {
+          this.showError("Access Denied!");
+        }
+     },
+     error => {
+      this.showError(error);
+    });
           
   }
 
@@ -34,13 +50,8 @@ export class HomePage {
           text: 'YES',
           handler: () => {
             let navTransition = confirm.dismiss();
-            this.billingApi.logout().subscribe(succ => {
-                this.storage.remove('agent').then(
-                ()=>{
-                  navTransition.then(() => {this.navCtrl.setRoot(LoginPage)});
-                },
-                error=>console.error(error)
-                );
+            this.authApi.logout().subscribe(succ => {
+                this.storageSrv.removeAgent();
             });
 
             return false;
@@ -49,5 +60,25 @@ export class HomePage {
       ]
     });
     confirm.present();
+  }
+
+  showLoading() {
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+    this.loading.present();
+  }
+
+  showError(text) {
+    setTimeout(() => {
+      this.loading.dismiss();
+    });
+ 
+    let alert = this.alertCtrl.create({
+      title: 'Login Failure',
+      subTitle: text,
+      buttons: ['OK']
+    });
+    alert.present(prompt);
   }
 }

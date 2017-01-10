@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { NavController, AlertController, LoadingController, Loading } from 'ionic-angular';
 import { BillingAuthenticationApi } from '../../providers/BillingAuthenticationApi';
 import { Agent } from '../../providers/BillingAuthenticationApi';
+import { StorageService } from '../../providers/StorageService';
 import { HomePage } from '../home/home';
 import 'rxjs/add/operator/map';
 
@@ -16,16 +16,9 @@ export class LoginPage {
   loading: Loading;
   agent: Agent;
 
-  constructor(storage: Storage, public navCtrl: NavController, private billingApi: BillingAuthenticationApi, private alertCtrl: AlertController, private loadingCtrl: LoadingController) {
+  constructor(private storageSrv: StorageService, public navCtrl: NavController, private billingApi: BillingAuthenticationApi, private alertCtrl: AlertController, private loadingCtrl: LoadingController) {
 
-    storage.get('agent').then(
-      data => {
-        if(data !== null) {
-          this.agent = new Agent(data.id,data.name,data.email,data.pass,data.session);
-        }
-      },
-      error => console.error(error)
-    );
+    this.storageSrv.removeAgent();
   }
 
   public login () {
@@ -33,7 +26,9 @@ export class LoginPage {
     this.billingApi.login(this.user,this.pass).subscribe(
      data => {
         if(data) {
-
+          let agentVal = this.billingApi.getAgent();
+          this.storageSrv.setAgent(agentVal.id, agentVal.name, agentVal.email, agentVal.pass, agentVal.token);
+          
           setTimeout(() => {
             this.loading.dismiss();
             this.navCtrl.setRoot(HomePage)
