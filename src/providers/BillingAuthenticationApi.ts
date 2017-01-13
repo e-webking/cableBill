@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import { Http } from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import {GlobalVars} from './globalVars';
 
 export class Agent {
   id: number;
@@ -21,14 +22,15 @@ export class Agent {
 
 @Injectable()
 export class BillingAuthenticationApi {
-  
-  private authURL: string = "http://typo3.local/billing/index.php?id=29";
-  private logoutURL: string = "http://billing.local/routing/logout/";
 
   currentAgent: Agent;
-  
-  constructor(public http: Http) {
+  authURL: string;
+  logoutURL:string;
+
+  constructor(public http: Http, apiConfig: GlobalVars) {
     this.http = http;
+    this.authURL = apiConfig.authURL;
+    this.logoutURL = apiConfig.logoutURL;
   }
 
   public login(user,pass) {
@@ -41,7 +43,7 @@ export class BillingAuthenticationApi {
         this.http.get(this.authURL + '&user=' + user + '&pass=' + pass + '&logintype=login&type=90')
         .map(res => res.json()).subscribe(data => {
 
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
 
             if(data.status == "OK") {
               this.currentAgent = new Agent(data.agent,data.name,user,pass,data.token);
@@ -62,10 +64,14 @@ export class BillingAuthenticationApi {
 
   public logout() {
     return Observable.create(observer => {
-      this.http.get(this.logoutURL + this.currentAgent.token);
-      this.currentAgent = null;
-      observer.next(true);
-      observer.complete();
+      this.http.get(this.logoutURL + this.currentAgent.id + '/' + this.currentAgent.token).map(res => res.json()).subscribe(data => {
+        if(data.status == 'OK') {
+          this.currentAgent = null;
+          observer.next(true);
+          observer.complete();
+        }
+      });
+      
     });
   }
 }

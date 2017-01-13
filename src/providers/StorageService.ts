@@ -36,13 +36,18 @@ export class StorageService {
     }
 
     public removeAgent() {
-    	this.loadAgent().subscribe(
-    		data => {
-    			if(data) {
-    				this.storage.remove('agent');
-    			}
-    		}
-    	);
+        return Observable.create(observer => {
+            this.storage.get('agent').then(
+                data => {
+                    if(data !== null) {
+                        this.storage.remove('agent');
+                        observer.next(true);
+                    } else {
+                        observer.next(false);
+                    }
+                    observer.complete();
+                });
+        });
     }
 
     public setAgent(id,name,email,pass,token) {

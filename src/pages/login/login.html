@@ -11,26 +11,22 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-	<div *ngIf="agent">
-	Check for storage {{agent.name}}!
-	</div>
-  <ion-list>
+<ion-content padding class="login">
+  <form class="list" [formGroup]="loginForm" (ngSubmit)="login()">
 
   <ion-item>
     <ion-label floating>Username</ion-label>
-    <ion-input [(ngModel)]="user" type="text" value=""></ion-input>
+    <ion-input type="text" formControlName="user"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label floating>Password</ion-label>
-    <ion-input [(ngModel)]="pass"  type="password" value=""></ion-input>
+    <ion-input type="password" formControlName="pass"></ion-input>
   </ion-item>
 
-</ion-list>
- <button ion-button icon-left block (click)="login()">
+ <button ion-button icon-right block type="submit" [disabled]="!loginForm.valid">
+  Login
 	<ion-icon name="log-in"></ion-icon>
- 	Login
  </button>
-
+</form>
 </ion-content>

@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { StatusBar, Splashscreen } from 'ionic-native';
+import { StatusBar, Splashscreen} from 'ionic-native';
 import { Storage } from '@ionic/storage';
 import { GlobalVars } from '../providers/globalVars';
 import { BillingAuthenticationApi } from '../providers/BillingAuthenticationApi';
 import { BillingCustomerApi } from '../providers/BillingCustomerApi';
 import { StorageService } from '../providers/StorageService';
 import { LoginPage } from '../pages/login/login';
-
 
 @Component({
   templateUrl: 'app.html',

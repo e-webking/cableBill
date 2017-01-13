@@ -6,9 +6,9 @@
       </button>
     </ion-buttons>
     <ion-buttons end>
-      <button ion-button color="danger" solid round (click)="logout()" icon-left>
-        <ion-icon name="log-out"></ion-icon>
+      <button ion-button color="danger" solid round (click)="logout()" icon-right>
         Logout
+        <ion-icon name="log-out"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -18,5 +18,26 @@
 </ion-header>
 
 <ion-content padding>
-  List all the customers
+  <ion-searchbar placeholder="Search customer" [(ngModel)]="searchTerm" [formControl]="searchControl" (ionInput)="onSearchInput()"></ion-searchbar>
+  <div *ngIf="searching" class="spinner-container">
+        <ion-spinner></ion-spinner>
+    </div>
+  <ion-list [virtualScroll]="customers" approxItemHeight="80px" bufferRatio="4">
+        <ion-item *virtualItem="let customer">
+            <ion-thumbnail item-left>
+                <ion-img [src]="customer.photo" width="75" height="75" *ngIf="customer.photo"></ion-img>
+            </ion-thumbnail>
+            <h2>{{customer.name}}</h2>
+            <button ion-button icon-left (click)="callPhone(customer.mobile)">
+                <ion-icon name="call"></ion-icon>
+                {{customer.mobile}}
+            </button>
+            <p>{{customer.locality}}<br>
+            {{customer.address}}</p>
+            <button ion-button clear icon-right item-right (click)="navigate(customer.uid)" large>
+              <i class="fa fa-inr"></i> 
+              <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+        </ion-item>
+  </ion-list>
 </ion-content>

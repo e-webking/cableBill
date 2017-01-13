@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-buttons left>
+      <button ion-button clear>
+         <img src="assets/icon/logo.png" />
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+  <ion-toolbar>
+    <ion-title color="light">Customer Bills</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+<ion-card *ngIf="customer">
+  <ion-card-header>
+    Total due: <i class="fa fa-inr"></i> 
+      {{due}}
+  </ion-card-header>
+  <img [src]="customer.photo" *ngIf="customer.photo" height="200">
+  <ion-card-content>
+      <ion-card-title>
+      {{customer.name}}
+      </ion-card-title>
+      <p *ngIf="customer.mobile"><ion-icon name="call"></ion-icon> {{customer.mobile}}</p>
+      <p *ngIf="customer.email"><ion-icon name="mail"></ion-icon> {{customer.email}}</p>
+      <p><ion-icon name="globe"></ion-icon> {{customer.address}}, {{customer.locality}}, {{customer.zip}}, {{customer.city}}</p>
+      <p *ngIf="customer.stbno"><ion-icon name="film"></ion-icon> STB No. {{customer.stbno}}</p>
+      <p *ngIf="customer.ipno"><ion-icon name="desktop"></ion-icon> IP No. {{customer.ipno}}</p>
+  </ion-card-content>
+  <ion-row no-padding>
+      <ion-col>
+        <button ion-button clear icon-left (click)="callPhone()">
+          <ion-icon name='call'></ion-icon>
+          Call
+        </button>
+      </ion-col>
+      <ion-col text-right>
+        <button ion-button clear icon-left>
+          <ion-icon name='camera'></ion-icon>
+          Change photo
+        </button>
+      </ion-col>
+</ion-row>
+</ion-card>
+<ion-list>
+  <ion-list-header>
+    DUE BILLS
+  </ion-list-header>
+  <ion-item *ngFor="let bill of bills" (click)="updateBill(bill)">
+    <ion-label>{{bill.gendate}}, Due Amt: <i class="fa fa-inr"></i> {{bill.paydue}}</ion-label>
+    <button ion-button clear icon-right item-right>
+      Pay
+      <ion-icon name='arrow-forward'></ion-icon>
+    </button>
+  </ion-item> 
+</ion-list>
+</ion-content>
