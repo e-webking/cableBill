@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Headers, RequestOptions} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import {GlobalVars} from './globalVars';
@@ -106,4 +106,32 @@ export class BillingCustomerApi {
     return this.currentCustomerData;
   }
 
+  public pay(agent:number, customer: number, bill: number, amount: number, token: string) {
+     console.log('Agent: ' + agent + ', Customer: ' + customer + ', Bill: ' + bill + ", Amount: " + amount + 'token: ' + token);
+    if(agent === null || token === null || customer === null || bill === null || amount === null) {
+      return Observable.throw("Invalid input!");
+    } else {
+      let postData = 'bill=' + bill + '&amount=' + amount + '&token=' + token;
+      let headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded'
+          });
+      let options = new RequestOptions({
+            headers: headers
+          });
+          
+      return Observable.create(observer => {
+          
+
+         this.http.post(this.billURL + agent + '/' + customer, postData, options).map(res => res.json())
+        .subscribe(data => {
+            if (data.status == "OK") {
+              observer.next(true);
+            } else {
+              observer.next(false);
+            }
+            observer.complete();
+          });
+      });
+    }
+  }
 }

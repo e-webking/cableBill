@@ -47,9 +47,9 @@
   <ion-list-header>
     DUE BILLS
   </ion-list-header>
-  <ion-item *ngFor="let bill of bills" (click)="updateBill(bill)">
+  <ion-item *ngFor="let bill of bills">
     <ion-label>{{bill.gendate}}, Due Amt: <i class="fa fa-inr"></i> {{bill.paydue}}</ion-label>
-    <button ion-button clear icon-right item-right>
+    <button ion-button clear icon-right item-right (click)="payBill(bill)">
       Pay
       <ion-icon name='arrow-forward'></ion-icon>
     </button>
